@@ -1,8 +1,11 @@
 package com.fostersestate.emails;
 
+import com.fostersestate.common.Secrets;
+import com.fostersestate.emails.dto.EmailCreds;
 import com.fostersestate.emails.dto.EmailRequest;
 import com.fostersestate.emails.dto.EmailResponse;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
@@ -35,6 +38,9 @@ public class EmailService {
     public EmailResponse sendEmail(EmailRequest emailRequest) {
 
         System.out.println("Attempting to send email to: " + emailRequest.recipientEmail);
+
+        String emailCredsString = Secrets.getSecret("creds/email");
+        EmailCreds emailCreds = new EmailCreds(emailCredsString.split(",")[0], emailCredsString.split(",")[1]);
 
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
