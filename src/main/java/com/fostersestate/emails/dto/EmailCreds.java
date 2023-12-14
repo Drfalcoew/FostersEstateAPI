@@ -7,16 +7,14 @@ public class EmailCreds {
     private String email;
     private String password;
 
+    public EmailCreds() { }
+
     public EmailCreds(String email, String password) {
         this.email = email;
         this.password = password;
     }
 
-    @Override
-    public String toString() {
-        return "EmailCreds{" +
-                "email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                '}';
-    }
+    public String getEmail() { return email; }
+
+    public String getPassword() { return password; }
 }

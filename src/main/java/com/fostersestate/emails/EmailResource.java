@@ -6,6 +6,8 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 
+import java.net.UnknownServiceException;
+
 @Path("/email")
 public class EmailResource {
 
@@ -27,13 +29,13 @@ public class EmailResource {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes("*/*")
-    public EmailResponse sendEmail(EmailRequest emailRequest) {
+    public EmailResponse sendEmail(EmailRequest emailRequest) throws UnknownServiceException {
         System.out.println("Email Request: " + emailRequest.toString());
         try {
             return emailService.sendEmail(emailRequest);
         } catch (Exception e) {
             e.printStackTrace();
-            return new EmailResponse("Error");
+            throw new UnknownServiceException("Failed to send email");
         }
     }
 }

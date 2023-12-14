@@ -1,11 +1,11 @@
 package com.fostersestate.emails;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fostersestate.common.Secrets;
 import com.fostersestate.emails.dto.EmailCreds;
 import com.fostersestate.emails.dto.EmailRequest;
 import com.fostersestate.emails.dto.EmailResponse;
 import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
@@ -17,8 +17,8 @@ import static java.util.UUID.randomUUID;
 @RequestScoped
 public class EmailService {
 
-    public static final String MAIL = "drfalcoew@icloud.com";
-    public static final String PASSWORD = "lvmf-yecs-etlv-hcew"; // Move to AWS Secrets Manager
+    private static final String SUPPORT_EMAIL = "support@fostersestate.com";
+    private static final String NOTIFY_EMAIL = "drew@fostersestate.com";
 
     /**
      * Generates a random order number
@@ -36,11 +36,49 @@ public class EmailService {
      * @return String orderNumber
      */
     public EmailResponse sendEmail(EmailRequest emailRequest) {
+        String orderNumber = sendEmailToRecipient(emailRequest);
+        notifySelf(emailRequest.recipientName, orderNumber,
+                emailRequest.phoneNumber, emailRequest.preferredDate, emailRequest.comments);
+        return new EmailResponse(orderNumber);
+    }
 
+    /**
+     * Sends an email notification to self (drew@fostersestate.com)
+     *
+     * @param orderNumber  Order number
+     */
+    private void notifySelf(String name, String orderNumber,
+                            String phoneNumber, String preferredDate, String comments) {
+
+        String _message = "Name: " + name + "\n\n" +
+                "Phone Number: " + phoneNumber + "\n\n" +
+                "Order Number: " + orderNumber + "\n\n" +
+                "Preferred Date: " + preferredDate + "\n\n" +
+                "Comments: " + comments;
+
+        sendEmailToRecipient(new EmailRequest(name, NOTIFY_EMAIL, phoneNumber, name + " requested an appointment!",
+                _message, preferredDate, comments));
+    }
+
+    /**
+     * Sends an email to the specified recipient
+     *
+     * @param emailRequest EmailRequest
+     * @return String orderNumber
+     */
+    private String sendEmailToRecipient(EmailRequest emailRequest) {
         System.out.println("Attempting to send email to: " + emailRequest.recipientEmail);
 
         String emailCredsString = Secrets.getSecret("creds/email");
-        EmailCreds emailCreds = new EmailCreds(emailCredsString.split(",")[0], emailCredsString.split(",")[1]);
+        EmailCreds emailCreds;
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            emailCreds = objectMapper.readValue(emailCredsString, EmailCreds.class);
+        } catch (Exception e) {
+            System.out.println("Failed to parse email creds!");
+            throw new RuntimeException(e);
+        }
 
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
@@ -53,15 +91,15 @@ public class EmailService {
         Session session = Session.getInstance(props,
                 new Authenticator() {
                     protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(MAIL, PASSWORD);
+                        return new PasswordAuthentication(emailCreds.getEmail(), emailCreds.getPassword());
                     }
                 });
 
         try {
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress("support@fostersestate.com"));
+            message.setFrom(new InternetAddress(SUPPORT_EMAIL));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(emailRequest.recipientEmail));
-            message.setSubject(emailRequest.subject + "Order Number: " + orderNumber);
+            message.setSubject(emailRequest.subject + " - Order Number: " + orderNumber);
             message.setText(emailRequest.message);
 
             Transport.send(message);
@@ -72,6 +110,7 @@ public class EmailService {
             System.out.println("Email failed to send!");
             throw new RuntimeException(e);
         }
-        return new EmailResponse(orderNumber);
+        return orderNumber;
     }
+
 }
