@@ -36,6 +36,7 @@ jobs:
 
       - name: Generate and Print Host Key Fingerprint
         run: |
+          sudo mkdir -p /home/ubuntu/.ssh/known_hosts
           ssh-keygen -f "/home/ubuntu/.ssh/known_hosts" -R ${{ secrets.EC2_HOST }}
           ssh-keyscan ${{ secrets.EC2_HOST }} >> "/home/ubuntu/.ssh/known_hosts"
           ssh-keygen -lf "/home/ubuntu/.ssh/known_hosts"
