@@ -36,7 +36,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "build/quarkus-app/quarkus-run.jar"
+          source: "build/quarkus-app"
           target: "/home/ubuntu/"
 
       - name: Generate Host Key Fingerprint
