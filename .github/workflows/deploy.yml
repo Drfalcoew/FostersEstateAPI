@@ -21,6 +21,9 @@ jobs:
 
       - name: print dir
         run: ls -l
+        
+      - name: Make gradlew executable
+        run: sudo chmod +x gradlew
 
       - name: Build and Package
         run: ./gradlew build -x test
