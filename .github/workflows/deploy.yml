@@ -59,7 +59,10 @@ jobs:
           ls -la
           pwd
           cd /home/ubuntu
-          ls -la "
+          ls -la
+          cd /app
+          ls -la
+          "
         env:
           PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           HOST: ${{ secrets.EC2_HOST }}
