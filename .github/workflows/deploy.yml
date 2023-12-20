@@ -41,15 +41,16 @@ jobs:
 
       - name: Generate and Print Host Key Fingerprint
         run: |
+          cd /home/runner
+          ls -la
           mkdir -p /home/runner/.ssh
           ssh-keygen -R ${{ secrets.EC2_HOST }} || true
           ssh-keyscan ${{ secrets.EC2_HOST }} >> /home/runner/.ssh/known_hosts
           ssh-keygen -lf /home/runner/.ssh/known_hosts
+          cat /home/runner/.ssh/known_hosts
 
       - name: Run SSH command
         run: |
-          cd /home/runner
-          ls -la
           pwd
           echo "$PRIVATE_KEY" > /home/runner/.ssh/private_key.pem
           chmod 600 /home/runner/.ssh/private_key.pem
