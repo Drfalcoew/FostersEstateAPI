@@ -28,7 +28,7 @@ jobs:
         run: sudo chmod +x gradlew
 
       - name: Build and Package
-        run: ./gradlew build -x test
+        run: ./gradlew quarkusBuild -x test
 
       - name: Copy JAR to EC2
         uses: appleboy/scp-action@v0.1.4
@@ -56,7 +56,7 @@ jobs:
           sudo apt-get install default-jre -y
           echo 'Installed Java'
           cd /home/ubuntu/build/quarkus-app
-          sudo java -jar quarkus-run.jar
+          sudo java -jar build/quarkus-app/quarkus-run.jar
           echo 'Started Java App'
           ps aux | grep 'fostersestate-api'
           sudo ss -tulpn | grep 8080
