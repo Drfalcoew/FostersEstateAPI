@@ -62,11 +62,14 @@ jobs:
           ls -la
           cd /home/ubuntu/app
           ls -la
+          cd /home/ubuntu/build/libs
+          ls -la
           "
         env:
           PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           HOST: ${{ secrets.EC2_HOST }}
           USERNAME: ${{ secrets.EC2_USER }}
+
 
 
         
