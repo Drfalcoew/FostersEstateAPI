@@ -43,7 +43,7 @@ jobs:
         run: |
           cd /home/runner
           ls -la
-          mkdir -p /home/runner/.ssh
+          mkdir -p /home/runner/.ssh/known_hosts
           ssh-keygen -R ${{ secrets.EC2_HOST }} || true
           ssh-keyscan ${{ secrets.EC2_HOST }} >> /home/runner/.ssh/known_hosts
           ssh-keygen -lf /home/runner/.ssh/known_hosts
