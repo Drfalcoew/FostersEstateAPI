@@ -37,10 +37,10 @@ jobs:
       - name: Generate and Print Host Key Fingerprint
         run: |
           ssh-keygen -R ${{ secrets.EC2_HOST }} || true
-          sudo mkdir -p /home/ubuntu/.ssh/
-          sudo chown -R ubuntu:ubuntu /home/ubuntu/.ssh/
-          ssh-keyscan ${{ secrets.EC2_HOST }} >> "/home/ubuntu/.ssh/known_hosts"
-          ssh-keygen -lf "/home/ubuntu/.ssh/known_hosts"
+          mkdir -p .ssh
+          ssh-keyscan ${{ secrets.EC2_HOST }} >> .ssh/known_hosts
+          ssh-keygen -lf .ssh/known_hosts
+
       
 
       - name: Run SSH command
