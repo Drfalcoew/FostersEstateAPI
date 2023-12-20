@@ -60,7 +60,7 @@ jobs:
           pwd
           cd /home/ubuntu
           ls -la
-          cd /app
+          cd /home/ubuntu/app
           ls -la
           "
         env:
