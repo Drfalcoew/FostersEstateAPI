@@ -55,7 +55,11 @@ jobs:
           pwd
           echo "$PRIVATE_KEY" > /home/runner/.ssh/private_key.pem
           chmod 600 /home/runner/.ssh/private_key.pem
-          ssh -i /home/runner/.ssh/private_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "sudo systemctl restart fostersestate-api.service"
+          ssh -i /home/runner/.ssh/private_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "
+          ls -la
+          pwd
+          cd /home/ubuntu
+          ls -la "
         env:
           PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           HOST: ${{ secrets.EC2_HOST }}
