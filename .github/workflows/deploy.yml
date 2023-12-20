@@ -53,14 +53,15 @@ jobs:
           chmod 600 /home/runner/.ssh/private_key.pem
           ssh -i /home/runner/.ssh/private_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "
           sudo apt-get update
-          sudo apt-get install default-jre -y
+          sudo apt install openjdk-17-jdk-headless -y
           echo 'Installed Java'
           cd /home/ubuntu/build/quarkus-app
           sudo java -jar build/quarkus-app/quarkus-run.jar
-          echo 'Started Java App'
-          ps aux | grep 'fostersestate-api'
-          sudo ss -tulpn | grep 8080
-          sudo ufw status
+          if [ $? -eq 0 ]; then
+            echo 'Java App Started'
+          else
+            echo 'Java App Failed to Start'
+          fi
           "
         env:
           PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
