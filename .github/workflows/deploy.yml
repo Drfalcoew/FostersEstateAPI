@@ -44,14 +44,16 @@ jobs:
       
 
       - name: Run SSH command
-        run: |
-          echo "$PRIVATE_KEY" > private_key.pem
-          chmod 600 private_key.pem
-          ssh -i "private_key.pem" ubuntu@ec2-54-215-99-68.us-west-1.compute.amazonaws.com 'sudo systemctl restart fostersestate-api'
-        env:
-          PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          HOST: ${{ secrets.EC2_HOST }}
-          USERNAME: ${{ secrets.EC2_USER }}
-
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.EC2_PORT }}
+          script: |
+            sudo systemctl stop fostersestate-api.service
+            sudo rm -rf /home/ubuntu/fostersestate-api-1.0.0-SNAPSHOT.jar
+            sudo mv /home/ubuntu/fostersestate-api-1.0.0-SNAPSHOT.jar /home/ubuntu/fostersestate-api.jar
+            sudo systemctl start fostersestate-api.service
 
         
