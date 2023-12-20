@@ -1,0 +1,48 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+
+      - name: Build Quarkus project
+        run: |
+          ./gradlew build -x test
+        working-directory: path/to/your/quarkus/project
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: path/to/your/quarkus/project
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/fostersestate-api-jvm:latest
+
+      - name: SSH into EC2 and pull Docker image
+        uses: appleboy/ssh-action@v2
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          script: |
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/fostersestate-api-jvm:latest
+            docker run -d -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/fostersestate-api-jvm:latest
