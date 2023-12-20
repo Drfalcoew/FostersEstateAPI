@@ -25,9 +25,6 @@ jobs:
       - name: Build and Package
         run: ./gradlew build -x test
 
-      - name: Print Build Directory Contents
-        run: ls -al build/
-
       - name: Copy JAR to EC2
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -36,6 +33,12 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "build/libs/fostersestate-api-1.0.0-SNAPSHOT.jar"
           target: "/home/ubuntu/"
+
+      - name: Generate and Print Host Key Fingerprint
+        run: |
+          ssh-keygen -f "/home/ubuntu/.ssh/known_hosts" -R ${{ secrets.EC2_HOST }}
+          ssh-keyscan ${{ secrets.EC2_HOST }} >> "/home/ubuntu/.ssh/known_hosts"
+          ssh-keygen -lf "/home/ubuntu/.ssh/known_hosts"
 
       - name: Run SSH command
         run: |
