@@ -36,7 +36,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "build/libs/fostersestate-api-1.0.0-SNAPSHOT.jar"
+          source: "build/quarkus-app/quarkus-run.jar
           target: "/home/ubuntu/"
 
       - name: Generate Host Key Fingerprint
@@ -55,8 +55,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install default-jre -y
           echo 'Installed Java'
-          cd /home/ubuntu/build/libs
-          sudo java -jar fostersestate-api-1.0.0-SNAPSHOT.jar
+          cd /home/ubuntu/build/quarkus-app
+          sudo java -jar quarkus-run.jar
           echo 'Started Java App'
           ps aux | grep 'fostersestate-api'
           sudo ss -tulpn | grep 8080
