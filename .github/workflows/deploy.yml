@@ -41,7 +41,7 @@ jobs:
         run: |
           echo "$PRIVATE_KEY" > private_key.pem
           chmod 600 private_key.pem
-          ssh -i private_key.pem $USERNAME@$HOST 'sudo systemctl restart fostersestate-api'
+          ssh -i "private_key.pem" ubuntu@ec2-54-215-99-68.us-west-1.compute.amazonaws.com 'sudo systemctl restart fostersestate-api'
         env:
           PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           HOST: ${{ secrets.EC2_HOST }}
