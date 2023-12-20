@@ -19,30 +19,30 @@ jobs:
           distribution: 'adopt'
           java-version: '11'
 
-      - name: Build Quarkus project
+      - name: check directory and create if not exists
         run: |
-          ./gradlew build -x test
-        working-directory: path/to/your/quarkus/project
+          ls -l
+          if [ ! -d "/path/to/remote/directory/" ]; then
+            mkdir -p /path/to/remote/directory/
+          fi
 
-      - name: Login to DockerHub
-        uses: docker/login-action@v1
+      - name: Build and Package
+        run: ./gradlew build -x test
+
+      - name: Copy JAR to EC2
+        uses: appleboy/scp-action@v2
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "build/libs/your-app.jar"
+          target: "/path/to/remote/directory/"
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v2
-        with:
-          context: path/to/your/quarkus/project
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/fostersestate-api-jvm:latest
-
-      - name: SSH into EC2 and pull Docker image
+      - name: SSH into EC2 and restart application
         uses: appleboy/ssh-action@v2
         with:
           host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/fostersestate-api-jvm:latest
-            docker run -d -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/fostersestate-api-jvm:latest
+            sudo systemctl restart your-app
