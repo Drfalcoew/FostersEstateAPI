@@ -48,6 +48,7 @@ jobs:
 
       - name: Run SSH command
         run: |
+          cd /home/runner
           ls -la
           pwd
           echo "$PRIVATE_KEY" > /home/runner/.ssh/private_key.pem
