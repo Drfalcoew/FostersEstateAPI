@@ -19,12 +19,8 @@ jobs:
           distribution: 'adopt'
           java-version: '11'
 
-      - name: check directory and create if not exists
-        run: |
-          ls -l
-          if [ ! -d "/path/to/remote/directory/" ]; then
-            mkdir -p /path/to/remote/directory/
-          fi
+      - name: print dir
+        run: ls -l
 
       - name: Build and Package
         run: ./gradlew build -x test
