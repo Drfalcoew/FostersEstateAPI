@@ -37,11 +37,15 @@ jobs:
           source: "build/libs/fostersestate-api-1.0.0-SNAPSHOT.jar"
           target: "/home/ubuntu/"
 
-      - name: SSH into EC2 and restart application
-        uses: appleboy/ssh-action@v0.1.4
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            sudo systemctl restart fostersestate-api
+      - name: Run SSH command
+        run: |
+          echo "$PRIVATE_KEY" > private_key.pem
+          chmod 600 private_key.pem
+          ssh -i private_key.pem $USERNAME@$HOST 'sudo systemctl restart fostersestate-api'
+        env:
+          PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          HOST: ${{ secrets.EC2_HOST }}
+          USERNAME: ${{ secrets.EC2_USER }}
+
+
+        
