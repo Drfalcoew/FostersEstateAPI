@@ -58,6 +58,9 @@ jobs:
           cd /home/ubuntu/build/libs
           sudo java -jar fostersestate-api-1.0.0-SNAPSHOT.jar
           echo 'Started Java App'
+          ps aux | grep 'fostersestate-api'
+          sudo netstat -tulpn | grep 8080
+          sudo ufw status
           "
         env:
           PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
