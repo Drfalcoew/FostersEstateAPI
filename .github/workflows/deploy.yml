@@ -50,6 +50,7 @@ jobs:
           ssh-keyscan ${{ secrets.EC2_HOST }} >> /home/runner/.ssh/known_hosts
           ssh-keygen -lf /home/runner/.ssh/known_hosts
 
+
       - name: Run SSH command
         run: |
           echo "$PRIVATE_KEY" > /home/runner/.ssh/private_key.pem
