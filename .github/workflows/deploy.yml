@@ -1,9 +1,6 @@
 name: Deploy to EC2
 
 on:
-
-  workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
-
   push:
     branches:
       - main
@@ -26,7 +23,7 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: '17'
-        
+
       - name: Make gradlew executable
         run: sudo chmod +x gradlew
 
@@ -39,7 +36,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "build/quarkus-app"
+          source: "build/quarkus-app/quarkus-run.jar"
           target: "/home/ubuntu/"
 
       - name: Generate Host Key Fingerprint
@@ -50,25 +47,24 @@ jobs:
           ssh-keyscan ${{ secrets.EC2_HOST }} >> /home/runner/.ssh/known_hosts
           ssh-keygen -lf /home/runner/.ssh/known_hosts
 
-
       - name: Run SSH command
         run: |
           echo "$PRIVATE_KEY" > /home/runner/.ssh/private_key.pem
           chmod 600 /home/runner/.ssh/private_key.pem
-
-#         ssh into the ec2 instance and run the following commands
+          
+          #         ssh into the ec2 instance and run the following commands
           ssh -i /home/runner/.ssh/private_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "
-               
-#         Check if the pid is running and kill it
-            sudo kill -9 \$(sudo lsof -t -i:8080)
-            echo 'Java App Stopped'
-            sleep 10  # Wait for the application to stop (adjust if needed)
-            
-#         Install Java 17 if necessary and start the application
-            echo 'Java App Starting'
-            sudo apt install openjdk-17-jdk-headless -y
-            sudo java -jar /home/ubuntu/build/quarkus-app/quarkus-run.jar > /home/ubuntu/application.log 2>&1 &
-            echo 'Java App Restarted'
+          
+          #         Check if the pid is running and kill it
+          sudo kill -9 \$(sudo lsof -t -i:8080)
+          echo 'Java App Stopped'
+          sleep 10  # Wait for the application to stop (adjust if needed)
+          
+          #         Install Java 17 if necessary and start the application
+          echo 'Java App Starting'
+          sudo apt install openjdk-17-jdk-headless -y
+          sudo java -jar /home/ubuntu/build/quarkus-app/quarkus-run.jar > /home/ubuntu/application.log 2>&1 &
+          echo 'Java App Restarted'
           "
         env:
           PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
