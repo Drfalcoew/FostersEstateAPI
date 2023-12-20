@@ -28,6 +28,12 @@ jobs:
       - name: Build and Package
         run: ./gradlew build -x test
 
+      - name: Print Source Directory Contents
+        run: ls -al build/libs/
+
+      - name: Print Build Directory Contents
+        run: ls -al build/
+
       - name: Copy JAR to EC2
         uses: appleboy/scp-action@v0.1.4
         with:
