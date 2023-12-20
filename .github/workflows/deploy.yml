@@ -52,10 +52,10 @@ jobs:
 
       - name: Run SSH command
         run: |
-          pwd
           echo "$PRIVATE_KEY" > /home/runner/.ssh/private_key.pem
           chmod 600 /home/runner/.ssh/private_key.pem
           ssh -i /home/runner/.ssh/private_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "
+          echo 'Hello, World!'
           ls -la
           pwd
           cd /home/ubuntu
