@@ -30,7 +30,7 @@ jobs:
         run: ./gradlew build -x test
 
       - name: Copy JAR to EC2
-        uses: appleboy/scp-action@0.1.4
+        uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
@@ -39,7 +39,7 @@ jobs:
           target: "/path/to/remote/directory/"
 
       - name: SSH into EC2 and restart application
-        uses: appleboy/ssh-action@0.1.4
+        uses: appleboy/ssh-action@v0.1.4
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
