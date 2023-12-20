@@ -52,13 +52,18 @@ jobs:
           echo "$PRIVATE_KEY" > /home/runner/.ssh/private_key.pem
           chmod 600 /home/runner/.ssh/private_key.pem
           ssh -i /home/runner/.ssh/private_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "
+          sudo apt-get update
+          sudo apt-get install default-jre -y
+          echo 'Installed Java'
           cd /home/ubuntu/build/libs
           sudo java -jar fostersestate-api-1.0.0-SNAPSHOT.jar
+          echo 'Started Java App'
           "
         env:
           PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           HOST: ${{ secrets.EC2_HOST }}
           USERNAME: ${{ secrets.EC2_USER }}
+
 
 
 
