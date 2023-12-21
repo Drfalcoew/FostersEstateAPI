@@ -5,6 +5,7 @@ import com.fostersestate.common.Secrets;
 import com.fostersestate.emails.dto.EmailCreds;
 import com.fostersestate.emails.dto.EmailRequest;
 import com.fostersestate.emails.dto.EmailResponse;
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.RequestScoped;
 
 import javax.mail.*;
@@ -13,6 +14,7 @@ import javax.mail.internet.MimeMessage;
 import java.util.Properties;
 
 import static java.util.UUID.randomUUID;
+
 
 @RequestScoped
 public class EmailService {
@@ -37,6 +39,8 @@ public class EmailService {
      */
     public EmailResponse sendEmail(EmailRequest emailRequest) {
         String orderNumber = sendEmailToRecipient(emailRequest);
+        Log.debug("Sending email to self: " + emailRequest.toString());
+
         notifySelf(emailRequest.recipientName, orderNumber,
                 emailRequest.phoneNumber, emailRequest.preferredDate, emailRequest.comments);
         return new EmailResponse(orderNumber);
@@ -67,7 +71,7 @@ public class EmailService {
      * @return String orderNumber
      */
     private String sendEmailToRecipient(EmailRequest emailRequest) {
-        System.out.println("Attempting to send email to: " + emailRequest.recipientEmail);
+        Log.debug("Attempting to send email to: " + emailRequest.recipientEmail);
 
         String emailCredsString = Secrets.getSecret("creds/email");
         EmailCreds emailCreds;
@@ -76,7 +80,7 @@ public class EmailService {
             ObjectMapper objectMapper = new ObjectMapper();
             emailCreds = objectMapper.readValue(emailCredsString, EmailCreds.class);
         } catch (Exception e) {
-            System.out.println("Failed to parse email creds!");
+            Log.error("Failed to parse email creds");
             throw new RuntimeException(e);
         }
 
@@ -104,13 +108,12 @@ public class EmailService {
 
             Transport.send(message);
 
-            System.out.println("Email sent successfully!");
+            Log.info("Email sent successfully!");
 
-        } catch (MessagingException e) {
-            System.out.println("Email failed to send!");
+        } catch (Exception e) {
+            Log.error("Failed to send email");
             throw new RuntimeException(e);
         }
         return orderNumber;
     }
-
 }
