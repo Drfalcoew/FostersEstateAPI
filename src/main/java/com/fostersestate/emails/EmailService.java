@@ -71,7 +71,7 @@ public class EmailService {
      * @return String orderNumber
      */
     private String sendEmailToRecipient(EmailRequest emailRequest) {
-        Log.debug("Attempting to send email to: " + emailRequest.recipientEmail);
+        Log.debug("Attempting to send email from " + SUPPORT_EMAIL + " to " + emailRequest.recipientEmail);
 
         String emailCredsString = Secrets.getSecret("creds/email");
         EmailCreds emailCreds;

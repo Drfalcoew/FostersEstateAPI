@@ -58,8 +58,12 @@ jobs:
           
           #         Check if the pid is running and kill it
           sudo kill -9 `sudo lsof -t -i:8080`
-          echo 'Java App Stopped'
-          sleep 10  # Wait for the application to stop (adjust if needed)
+          if [ $? -eq 0 ]; then
+            echo 'Java App Stopped'
+          else
+            echo 'Java App Not Running'
+          fi
+          sleep 6  # Wait for the application to stop (adjust if needed)
           
           #         Install Java 17 if necessary and start the application
           echo 'Java App Starting'
