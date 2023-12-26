@@ -7,6 +7,8 @@ public class EmailRequest {
     public String recipientEmail;
     public String recipientName;
     public String phoneNumber;
+
+    public String address;
     public String subject;
     public String message;
 
@@ -16,11 +18,12 @@ public class EmailRequest {
 
     public EmailRequest() { }
 
-    public EmailRequest(String name, String recipientEmail, String phoneNumber,
+    public EmailRequest(String name, String recipientEmail, String phoneNumber, String address,
                         String subject, String message, String preferredDate, String comments) {
         this.recipientEmail = recipientEmail;
         this.recipientName = name;
         this.phoneNumber = phoneNumber;
+        this.address = address;
         this.subject = subject;
         this.message = message;
         this.preferredDate = preferredDate;

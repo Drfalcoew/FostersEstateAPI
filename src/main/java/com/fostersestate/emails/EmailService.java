@@ -42,7 +42,8 @@ public class EmailService {
         Log.debug("Sending email to self: " + emailRequest.toString());
 
         notifySelf(emailRequest.recipientName, orderNumber,
-                emailRequest.phoneNumber, emailRequest.preferredDate, emailRequest.comments);
+                emailRequest.phoneNumber, emailRequest.address,
+                emailRequest.preferredDate, emailRequest.comments);
         return new EmailResponse(orderNumber);
     }
 
@@ -52,15 +53,16 @@ public class EmailService {
      * @param orderNumber  Order number
      */
     private void notifySelf(String name, String orderNumber,
-                            String phoneNumber, String preferredDate, String comments) {
+                            String phoneNumber, String address, String preferredDate, String comments) {
 
         String _message = "Name: " + name + "\n\n" +
                 "Phone Number: " + phoneNumber + "\n\n" +
+                "Address: " + address + "\n\n" +
                 "Order Number: " + orderNumber + "\n\n" +
                 "Preferred Date: " + preferredDate + "\n\n" +
                 "Comments: " + comments;
 
-        sendEmailToRecipient(new EmailRequest(name, NOTIFY_EMAIL, phoneNumber, name + " requested an appointment!",
+        sendEmailToRecipient(new EmailRequest(name, NOTIFY_EMAIL, phoneNumber, address, name + " requested an appointment!",
                 _message, preferredDate, comments));
     }
 
@@ -103,7 +105,7 @@ public class EmailService {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(SUPPORT_EMAIL));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(emailRequest.recipientEmail));
-            message.setSubject(emailRequest.subject + " - Order Number: " + orderNumber);
+            message.setSubject(emailRequest.subject + " - Reference ID: " + orderNumber);
             message.setText(emailRequest.message);
 
             Transport.send(message);
