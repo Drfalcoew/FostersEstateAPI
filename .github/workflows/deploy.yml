@@ -57,12 +57,8 @@ jobs:
           ssh -i /home/runner/.ssh/private_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "
           
           #         Check if the pid is running and kill it
-          sudo kill -9 `sudo lsof -t -i:8080`
-          if [ $? -eq 0 ]; then
-            echo 'Java App Stopped'
-          else
-            echo 'Java App Not Running'
-          fi
+          sudo lsof -t -i:8080
+          sudo fuser -k 8080/tcp
           sleep 6  # Wait for the application to stop (adjust if needed)
           
           #         Install Java 17 if necessary and start the application
