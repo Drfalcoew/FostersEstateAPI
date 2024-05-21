@@ -6,9 +6,10 @@ import com.fostersestate.emails.dto.EmailCreds;
 import com.fostersestate.emails.dto.EmailRequest;
 import com.fostersestate.emails.dto.EmailResponse;
 import io.quarkus.logging.Log;
-import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import javax.mail.*;
+import javax.mail.Authenticator;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Properties;
@@ -16,7 +17,7 @@ import java.util.Properties;
 import static java.util.UUID.randomUUID;
 
 
-@RequestScoped
+@ApplicationScoped
 public class EmailService {
 
     private static final String SUPPORT_EMAIL = "support@fostersestate.com";
@@ -28,6 +29,7 @@ public class EmailService {
      * @return String orderNumber
      */
     private String generateOrderNumber() {
+        Log.info("Generating order number");
         return randomUUID().toString().replaceAll("[^a-zA-Z0-9]", "").substring(0, 14);
     }
 
@@ -38,8 +40,9 @@ public class EmailService {
      * @return String orderNumber
      */
     public EmailResponse sendEmail(EmailRequest emailRequest) {
+        Log.info("Sending email: " + emailRequest.toString());
         String orderNumber = sendEmailToRecipient(emailRequest);
-        Log.debug("Sending email to self: " + emailRequest.toString());
+        Log.info("Sending email to self: " + emailRequest);
 
         notifySelf(emailRequest.recipientName, orderNumber,
                 emailRequest.phoneNumber, emailRequest.address,
@@ -54,7 +57,7 @@ public class EmailService {
      */
     private void notifySelf(String name, String orderNumber,
                             String phoneNumber, String address, String preferredDate, String comments) {
-
+        Log.info("Sending email to self");
         String _message = "Name: " + name + "\n\n" +
                 "Phone Number: " + phoneNumber + "\n\n" +
                 "Address: " + address + "\n\n" +
@@ -73,12 +76,13 @@ public class EmailService {
      * @return String orderNumber
      */
     private String sendEmailToRecipient(EmailRequest emailRequest) {
-        Log.debug("Attempting to send email from " + SUPPORT_EMAIL + " to " + emailRequest.recipientEmail);
+        Log.info("Attempting to send email from " + SUPPORT_EMAIL + " to " + emailRequest.recipientEmail);
 
         String emailCredsString = Secrets.getSecret("creds/email");
         EmailCreds emailCreds;
 
         try {
+            Log.info("Parsing email creds");
             ObjectMapper objectMapper = new ObjectMapper();
             emailCreds = objectMapper.readValue(emailCredsString, EmailCreds.class);
         } catch (Exception e) {
@@ -94,6 +98,8 @@ public class EmailService {
 
         String orderNumber = generateOrderNumber();
 
+        Log.info("Creating email session");
+
         Session session = Session.getInstance(props,
                 new Authenticator() {
                     protected PasswordAuthentication getPasswordAuthentication() {
@@ -102,12 +108,15 @@ public class EmailService {
                 });
 
         try {
+
+            Log.info("Creating email message");
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(SUPPORT_EMAIL));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(emailRequest.recipientEmail));
             message.setSubject(emailRequest.subject + " - Reference ID: " + orderNumber);
             message.setText(emailRequest.message);
 
+            Log.info("Sending email");
             Transport.send(message);
 
             Log.info("Email sent successfully!");

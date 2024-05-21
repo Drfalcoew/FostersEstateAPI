@@ -1,34 +1,33 @@
-package com.fostersestate.emails;
+package com.fostersestate.formSubmission;
 
-import com.fostersestate.emails.dto.EmailRequest;
-import com.fostersestate.emails.dto.EmailResponse;
+import com.fostersestate.formSubmission.dto.FormRequest;
 import io.quarkus.logging.Log;
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.net.UnknownServiceException;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
-@Path("/email")
-public class EmailResource {
-
-    private final EmailService emailService = new EmailService();
+@Path("/form")
+public class FormResource {
+    private final FormService formService = new FormService();
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response sendEmail(EmailRequest emailRequest) throws UnknownServiceException {
+    public Response sendEmail(FormRequest formRequest) throws UnknownServiceException {
 
-        Log.info("Received email request: " + emailRequest.toString());
+        Log.info("Received email request: " + formRequest.toString());
         try {
-            EmailResponse emailResponse = emailService.sendEmail(emailRequest);
-            String accessControlAllowOriginValue = "https://fostersestate.com";
+            formService.sendEmail(formRequest);
+            String accessControlAllowOriginValue = "https://drfalcoew.com";
 
             return Response
-                    .ok(emailResponse)
+                    .ok()
                     .header("Access-Control-Allow-Origin", accessControlAllowOriginValue)
                     .header("Access-Control-Allow-Methods", "POST, OPTIONS")
                     .header("Access-Control-Max-Age", "3600")
@@ -40,6 +39,5 @@ public class EmailResource {
             throw new UnknownServiceException("UNKNOWN ERROR. Failed to send email");
         }
     }
-
 }
 

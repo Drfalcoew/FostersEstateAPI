@@ -30,5 +30,17 @@ public class EmailRequest {
         this.comments = comments;
     }
 
-
+    @Override
+    public String toString() {
+        return "EmailRequest{" +
+                "recipientEmail='" + recipientEmail + '\'' +
+                ", recipientName='" + recipientName + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", address='" + address + '\'' +
+                ", subject='" + subject + '\'' +
+                ", message='" + message + '\'' +
+                ", preferredDate='" + preferredDate + '\'' +
+                ", comments='" + comments + '\'' +
+                '}';
+    }
 }
